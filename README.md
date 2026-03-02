@@ -89,6 +89,10 @@ Browser (React + Agora RTC/RTM SDK)
 - **UID 101** — User
 - **UID 102** — Agent video (avatar)
 
+## Local Development
+
+For running locally without Supabase, see [local.md](local.md).
+
 ## Supabase Secrets Reference
 
 | Secret | Required | Description |

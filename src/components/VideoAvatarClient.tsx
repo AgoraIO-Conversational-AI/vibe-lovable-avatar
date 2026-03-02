@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, MicOff, Phone, PhoneOff, Settings, Send, AlertTriangle, Video } from "lucide-react";
+import { Mic, MicOff, Phone, PhoneOff, Settings, SendHorizontal, AlertTriangle, Video } from "lucide-react";
 import { useAgoraVideoClient } from "@/hooks/useAgoraVideoClient";
 import { useAudioVisualization } from "@/hooks/useAudioVisualization";
 import { Button } from "@/components/ui/button";
@@ -266,17 +266,17 @@ export function VideoAvatarClient() {
           <div className="flex items-center gap-2.5">
             <AgoraLogo size={28} />
             <div>
-              <h1 className="text-sm font-semibold leading-tight">Video Avatar AI Agent</h1>
-              <p className="text-xs text-muted-foreground">Powered by Agora</p>
+              <h1 className="text-sm font-semibold leading-tight">Agora Convo AI Video Agent</h1>
+              <p className="text-xs text-muted-foreground">React with Agora Web SDK</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
             <ThemeToggle />
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="rounded-full p-2 hover:bg-accent transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Settings className="h-5 w-5" />
+              <Settings className="h-4 w-4" />
             </button>
           </div>
         </header>
@@ -301,10 +301,10 @@ export function VideoAvatarClient() {
             <Button
               onClick={handleConnect}
               disabled={isLoading}
-              className="w-64 mx-auto h-12 rounded-lg text-base gap-2"
+              className="w-64 mx-auto h-11 rounded-lg text-sm gap-2"
               size="lg"
             >
-              <Phone className="h-5 w-5" />
+              <Phone className="h-4 w-4" />
               {isLoading ? "Connecting..." : "Start Call"}
             </Button>
 
@@ -371,32 +371,33 @@ export function VideoAvatarClient() {
             <button
               onClick={toggleMute}
               className={cn(
-                "h-14 w-14 rounded-full flex items-center justify-center transition-colors",
+                "w-11 h-11 rounded-lg flex items-center justify-center transition-colors",
                 isMuted
-                  ? "border-2 border-primary text-primary bg-transparent"
+                  ? "bg-muted text-destructive"
                   : "bg-primary text-primary-foreground"
               )}
             >
               {isMuted ? (
-                <MicOff className="h-6 w-6" />
+                <MicOff className="h-4 w-4" />
               ) : (
-                <Mic className="h-6 w-6" />
+                <Mic className="h-4 w-4" />
               )}
             </button>
           </div>
 
-          {/* Audio waveform */}
-          {!isMuted && (
-            <div className="flex items-end justify-center gap-0.5 h-8">
-              {frequencyData.slice(0, 24).map((val, i) => (
+          {/* Audio waveform — always rendered to prevent layout shift */}
+          <div className="flex items-end justify-center gap-0.5 h-8">
+            {Array.from({ length: 24 }).map((_, i) => {
+              const val = !isMuted ? (frequencyData[i] ?? 0) : 0;
+              return (
                 <div
                   key={i}
                   className="w-1 bg-primary/60 rounded-full transition-all duration-75"
                   style={{ height: `${Math.max(2, (val / 255) * 32)}px` }}
                 />
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -413,16 +414,19 @@ export function VideoAvatarClient() {
             <div
               key={msg.id}
               className={cn(
-                "flex",
-                msg.role === "user" ? "justify-end" : "justify-start"
+                "flex flex-col gap-1",
+                msg.role === "user" ? "items-end" : "items-start"
               )}
             >
+              <span className="text-xs text-muted-foreground px-1">
+                {msg.role === "user" ? "You" : "Agent"}
+              </span>
               <div
                 className={cn(
-                  "max-w-[80%] rounded-2xl px-4 py-2.5 text-sm",
+                  "max-w-[80%] rounded-2xl px-3 py-2 text-sm",
                   msg.role === "user"
-                    ? "bg-primary text-primary-foreground rounded-br-md"
-                    : "bg-muted text-foreground rounded-bl-md"
+                    ? "bg-foreground text-background rounded-br-md"
+                    : "bg-secondary text-secondary-foreground rounded-bl-md"
                 )}
               >
                 {msg.text}
@@ -444,14 +448,19 @@ export function VideoAvatarClient() {
               }
             }}
             placeholder="Type a message..."
-            className="flex-1"
+            className="flex-1 h-10"
           />
           <button
             onClick={handleSendMessage}
             disabled={!chatMessage.trim()}
-            className="rounded-md bg-primary p-2 text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+            className={cn(
+              "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors disabled:cursor-not-allowed",
+              chatMessage.trim()
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-muted-foreground"
+            )}
           >
-            <Send className="h-4 w-4" />
+            <SendHorizontal className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -508,16 +517,19 @@ export function VideoAvatarClient() {
               <div
                 key={msg.id}
                 className={cn(
-                  "flex",
-                  msg.role === "user" ? "justify-end" : "justify-start"
+                  "flex flex-col gap-1",
+                  msg.role === "user" ? "items-end" : "items-start"
                 )}
               >
+                <span className="text-xs text-muted-foreground px-1">
+                  {msg.role === "user" ? "You" : "Agent"}
+                </span>
                 <div
                   className={cn(
-                    "max-w-[80%] rounded-2xl px-4 py-2.5 text-sm",
+                    "max-w-[80%] rounded-2xl px-3 py-2 text-sm",
                     msg.role === "user"
-                      ? "bg-primary text-primary-foreground rounded-br-md"
-                      : "bg-muted text-foreground rounded-bl-md"
+                      ? "bg-foreground text-background rounded-br-md"
+                      : "bg-secondary text-secondary-foreground rounded-bl-md"
                   )}
                 >
                   {msg.text}
@@ -539,41 +551,47 @@ export function VideoAvatarClient() {
                 }
               }}
               placeholder="Type a message..."
-              className="flex-1"
+              className="flex-1 h-10"
             />
             <button
               onClick={handleSendMessage}
               disabled={!chatMessage.trim()}
-              className="rounded-md bg-primary p-2 text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+              className={cn(
+                "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors disabled:cursor-not-allowed",
+                chatMessage.trim()
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-muted-foreground"
+              )}
             >
-              <Send className="h-4 w-4" />
+              <SendHorizontal className="h-4 w-4" />
             </button>
           </div>
         </TabsContent>
       </Tabs>
 
       {/* Mobile bottom controls */}
-      <div className="flex justify-center gap-4 p-3 border-t">
+      <div className="flex justify-center gap-3 p-3 border-t">
         <button
           onClick={toggleMute}
           className={cn(
-            "h-14 w-14 rounded-full flex items-center justify-center transition-colors",
+            "w-11 h-11 rounded-lg flex items-center justify-center transition-colors",
             isMuted
-              ? "border-2 border-primary text-primary bg-transparent"
+              ? "bg-muted text-destructive"
               : "bg-primary text-primary-foreground"
           )}
         >
           {isMuted ? (
-            <MicOff className="h-6 w-6" />
+            <MicOff className="h-4 w-4" />
           ) : (
-            <Mic className="h-6 w-6" />
+            <Mic className="h-4 w-4" />
           )}
         </button>
         <button
           onClick={handleDisconnect}
-          className="h-14 w-14 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:bg-destructive/90 transition-colors"
+          className="h-11 px-6 rounded-lg bg-destructive text-white flex items-center justify-center gap-2 hover:bg-destructive/90 transition-colors text-sm font-medium"
         >
-          <PhoneOff className="h-6 w-6" />
+          <PhoneOff className="h-4 w-4" />
+          End Call
         </button>
       </div>
     </div>
@@ -585,23 +603,25 @@ export function VideoAvatarClient() {
       <header className="px-4 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-2.5">
           <AgoraLogo size={24} />
-          <span className="text-sm font-medium">
-            {channelName && (
-              <span className="text-muted-foreground font-mono text-xs mr-2">
-                {channelName}
+          <div className="flex flex-col gap-0.5">
+            <span className="text-sm font-semibold leading-tight">Agora Convo AI Video Agent</span>
+            <span className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live
               </span>
-            )}
-            {formatTime(connectionTime)}
-          </span>
+              <span className="font-mono">{formatTime(connectionTime)}</span>
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
             onClick={handleDisconnect}
-            className="hidden md:flex rounded-full bg-destructive px-5 py-2.5 text-destructive-foreground hover:bg-destructive/90 transition-colors items-center gap-2 text-sm font-medium"
+            className="hidden md:flex rounded-lg bg-destructive px-5 py-2.5 text-white hover:bg-destructive/90 transition-colors items-center gap-2 text-sm font-medium"
           >
             <PhoneOff className="h-4 w-4" />
-            End
+            End Call
           </button>
         </div>
       </header>
