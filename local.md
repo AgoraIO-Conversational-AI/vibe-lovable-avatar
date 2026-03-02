@@ -26,10 +26,13 @@ VITE_SUPABASE_URL="http://localhost:3001"
 
 ### 2. Start the test server
 
+`test-server.mjs` is included in the repo — it's a Node.js server that mimics Supabase Edge Functions locally.
+
 ```bash
 APP_ID=<your_app_id> \
 APP_CERTIFICATE=<your_app_certificate> \
 LLM_API_KEY=<your_llm_key> \
+TTS_VENDOR=elevenlabs \
 TTS_KEY=<your_elevenlabs_key> \
 TTS_VOICE_ID=<your_voice_id> \
 AVATAR_API_KEY=<your_anam_key> \
