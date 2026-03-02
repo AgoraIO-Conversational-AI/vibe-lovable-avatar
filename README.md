@@ -40,7 +40,6 @@ npx supabase secrets set \
 ```
 
 Optional secrets:
-- `AGENT_AUTH_HEADER` — override auth header (auto-generated from APP_ID + APP_CERTIFICATE by default)
 - `LLM_URL` — defaults to `https://api.openai.com/v1/chat/completions`
 - `LLM_MODEL` — defaults to `gpt-4o-mini`
 
@@ -104,6 +103,5 @@ For running locally without Supabase, see [local.md](local.md).
 | `TTS_VOICE_ID` | Yes | ElevenLabs voice ID |
 | `AVATAR_API_KEY` | Yes | Anam API key |
 | `AVATAR_ID` | Yes | Anam avatar ID |
-| `AGENT_AUTH_HEADER` | No | Override auth header (auto-generated from APP_ID + APP_CERTIFICATE) |
 | `LLM_URL` | No | LLM endpoint URL (default: OpenAI) |
 | `LLM_MODEL` | No | LLM model name (default: `gpt-4o-mini`) |

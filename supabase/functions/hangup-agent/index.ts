@@ -102,10 +102,8 @@ async function buildToken(
 
 async function buildAuthHeader(
   appId: string,
-  appCertificate: string,
-  agentAuthHeader: string
+  appCertificate: string
 ): Promise<string> {
-  if (agentAuthHeader) return agentAuthHeader;
   const token = await buildToken("", "", appId, appCertificate);
   return `agora token=${token}`;
 }
@@ -126,8 +124,6 @@ Deno.serve(async (req) => {
   try {
     const APP_ID = Deno.env.get("APP_ID") || "";
     const APP_CERTIFICATE = Deno.env.get("APP_CERTIFICATE") || "";
-    const AGENT_AUTH_HEADER = Deno.env.get("AGENT_AUTH_HEADER") || "";
-
     const { agentId } = await req.json();
 
     if (!agentId) {
@@ -142,7 +138,7 @@ Deno.serve(async (req) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: await buildAuthHeader(APP_ID, APP_CERTIFICATE, AGENT_AUTH_HEADER),
+        Authorization: await buildAuthHeader(APP_ID, APP_CERTIFICATE),
       },
     });
 

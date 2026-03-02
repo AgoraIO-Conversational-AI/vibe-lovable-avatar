@@ -117,12 +117,8 @@ async function buildToken(
 
 async function buildAuthHeader(
   appId: string,
-  appCertificate: string,
-  agentAuthHeader: string
+  appCertificate: string
 ): Promise<string> {
-  // If AGENT_AUTH_HEADER is set, use it directly (Basic auth)
-  if (agentAuthHeader) return agentAuthHeader;
-  // Otherwise generate a v007 token and return "agora token=<token>"
   const token = await buildToken("", "", appId, appCertificate);
   return `agora token=${token}`;
 }
@@ -169,7 +165,6 @@ Deno.serve(async (req) => {
   try {
     const APP_ID = Deno.env.get("APP_ID") || "";
     const APP_CERTIFICATE = Deno.env.get("APP_CERTIFICATE") || "";
-    const AGENT_AUTH_HEADER = Deno.env.get("AGENT_AUTH_HEADER") || "";
     const LLM_API_KEY = Deno.env.get("LLM_API_KEY") || "";
     const LLM_MODEL = Deno.env.get("LLM_MODEL") || "gpt-4o-mini";
     const LLM_URL =
@@ -271,7 +266,7 @@ Deno.serve(async (req) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: await buildAuthHeader(APP_ID, APP_CERTIFICATE, AGENT_AUTH_HEADER),
+          Authorization: await buildAuthHeader(APP_ID, APP_CERTIFICATE),
         },
         body: JSON.stringify(payload),
       }

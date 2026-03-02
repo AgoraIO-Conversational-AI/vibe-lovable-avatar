@@ -76,8 +76,7 @@ async function buildToken(channelName, uid, appId, appCertificate, rtmUid) {
   return "007" + toBase64(compressed);
 }
 
-async function buildAuthHeader(appId, appCertificate, agentAuthHeader) {
-  if (agentAuthHeader) return agentAuthHeader;
+async function buildAuthHeader(appId, appCertificate) {
   const token = await buildToken("", "", appId, appCertificate);
   return `agora token=${token}`;
 }
@@ -86,7 +85,6 @@ async function buildAuthHeader(appId, appCertificate, agentAuthHeader) {
 
 const APP_ID = process.env.APP_ID || "";
 const APP_CERTIFICATE = process.env.APP_CERTIFICATE || "";
-const AGENT_AUTH_HEADER = process.env.AGENT_AUTH_HEADER || "";
 const LLM_API_KEY = process.env.LLM_API_KEY || "";
 const LLM_MODEL = process.env.LLM_MODEL || "gpt-4o-mini";
 const LLM_URL = process.env.LLM_URL || "https://api.openai.com/v1/chat/completions";
@@ -143,7 +141,7 @@ async function handleHealth(_req, res) {
 
 async function handleCheckEnv(_req, res) {
   const requiredVars = ["APP_ID", "APP_CERTIFICATE", "LLM_API_KEY", "TTS_KEY", "TTS_VOICE_ID", "AVATAR_API_KEY", "AVATAR_ID"];
-  const optionalVars = ["AGENT_AUTH_HEADER", "LLM_URL", "LLM_MODEL"];
+  const optionalVars = ["LLM_URL", "LLM_MODEL"];
   const configured = {};
   const missing = [];
   for (const v of requiredVars) { const isSet = !!process.env[v]; configured[v] = isSet; if (!isSet) missing.push(v); }
@@ -190,7 +188,7 @@ async function handleStartVideoAgent(req, res) {
     },
   };
 
-  const authHeader = await buildAuthHeader(APP_ID, APP_CERTIFICATE, AGENT_AUTH_HEADER);
+  const authHeader = await buildAuthHeader(APP_ID, APP_CERTIFICATE);
   console.log("Auth header type:", authHeader.startsWith("agora token=") ? "token-based" : "basic");
   console.log("Avatar vendor:", AVATAR_VENDOR, "| Avatar ID:", AVATAR_ID);
   console.log("\n=== FULL PAYLOAD TO AGORA ===");
@@ -223,7 +221,7 @@ async function handleStartVideoAgent(req, res) {
 async function handleHangup(req, res) {
   const body = await readBody(req);
   if (!body.agentId) { jsonResponse(res, { error: "agentId is required" }, 400); return; }
-  const authHeader = await buildAuthHeader(APP_ID, APP_CERTIFICATE, AGENT_AUTH_HEADER);
+  const authHeader = await buildAuthHeader(APP_ID, APP_CERTIFICATE);
   const url = `https://api.agora.io/api/conversational-ai-agent/v2/projects/${APP_ID}/agents/${body.agentId}/leave`;
   const agoraRes = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", Authorization: authHeader } });
   const data = await agoraRes.text();
@@ -237,7 +235,6 @@ async function handleHangup(req, res) {
 console.log("Starting avatar test server on http://localhost:3001");
 console.log(`APP_ID: ${APP_ID}`);
 console.log(`APP_CERTIFICATE: ${APP_CERTIFICATE ? APP_CERTIFICATE.slice(0, 8) + "..." : "(empty)"}`);
-console.log(`AGENT_AUTH_HEADER: ${AGENT_AUTH_HEADER ? "(set)" : "(empty — will use token-based auth)"}`);
 console.log(`AVATAR_VENDOR: ${AVATAR_VENDOR}`);
 console.log(`AVATAR_ID: ${AVATAR_ID || "(empty)"}`);
 

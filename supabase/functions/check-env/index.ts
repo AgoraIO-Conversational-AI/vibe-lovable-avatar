@@ -20,7 +20,6 @@ Deno.serve(async (req) => {
   ];
 
   const optionalVars: string[] = [
-    "AGENT_AUTH_HEADER",
     "LLM_URL",
     "LLM_MODEL",
   ];
