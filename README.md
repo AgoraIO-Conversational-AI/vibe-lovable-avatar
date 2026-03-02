@@ -97,7 +97,7 @@ For running locally without Supabase, see [local.md](local.md).
 | Secret | Required | Description |
 |--------|----------|-------------|
 | `APP_ID` | Yes | Agora App ID |
-| `APP_CERTIFICATE` | Yes | Agora App Certificate (32-char hex, for token gen and API auth) |
+| `APP_CERTIFICATE` | Yes | Agora App Certificate (32-char hex). Used with `APP_ID` to generate v007 tokens inline for both RTC/RTM access and Agora Conversational AI API auth — no separate Customer Key/Secret or npm token package needed |
 | `LLM_API_KEY` | Yes | OpenAI API key |
 | `TTS_KEY` | Yes | ElevenLabs API key |
 | `TTS_VOICE_ID` | Yes | ElevenLabs voice ID |
